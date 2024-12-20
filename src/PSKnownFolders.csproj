@@ -1,0 +1,81 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>PSKnownFolders</AssemblyName>
+    <RootNamespace>WozDev.PSKnownFolders</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <SignAssembly>false</SignAssembly>
+    <Title>PSKnownFolders</Title>
+    <Authors>Woz</Authors>
+    <Company>WozDev</Company>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <PackageOutputPath>bin\$(Configuration)\</PackageOutputPath>
+    <!-- Define the project version -->
+    <Version>2.0.0</Version>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DefineConstants>TRACE</DefineConstants>
+    <DebugSymbols>false</DebugSymbols>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
+  <!-- Compile items -->
+  <ItemGroup>
+    <Compile Include="GetKnownFolderCommand.cs" />
+    <Compile Include="KnownFolder.cs" />
+    <Compile Include="KnownFolderCategory.cs" />
+    <Compile Include="KnownFolderDefinition.cs" />
+    <Compile Include="KnownFolderDefinitionFlags.cs" />
+    <Compile Include="KnownFolderRedirectionCapabilitiesExtensions.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="MoveKnownFolderCommand.cs" />
+    <Compile Include="Win32\*.cs" />
+  </ItemGroup>
+
+  <!-- Module content -->
+  <ItemGroup>
+    <Content Include="ModuleFiles\PSKnownFolders.format.ps1xml" />
+    <Content Include="ModuleFiles\PSKnownFolders.psd1" />
+  </ItemGroup>
+
+  <!-- NuGet package references -->
+  <ItemGroup>
+    <PackageReference Include="PowerShellStandard.Library" Version="5.1.1">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <!-- Post-build target to copy files -->
+  <Target Name="CopyModuleFiles" AfterTargets="Build">
+    <PropertyGroup>
+      <!-- Set destination folder using AssemblyName and Version -->
+      <ModuleOutputPath>$(MSBuildThisFileDirectory)..\$(AssemblyName)_$(Version)\</ModuleOutputPath>
+    </PropertyGroup>
+
+    <!-- Ensure the output folder exists -->
+    <MakeDir Directories="$(ModuleOutputPath)" />
+
+    <!-- Copy DLL -->
+    <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(ModuleOutputPath)" />
+
+    <!-- Copy module files -->
+    <Copy SourceFiles="@(Content)" DestinationFolder="$(ModuleOutputPath)" />
+  </Target>
+
+</Project>
